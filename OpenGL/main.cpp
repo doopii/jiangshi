@@ -54,9 +54,9 @@ int stacks = 8;
 const GLfloat COLOR_MAROON[] = { 0.5f, 0.0f, 0.0f };
 const GLfloat COLOR_DARK_PURPLE[] = { 0.145f, 0.016f, 0.29f };
 const GLfloat COLOR_DARK_PLUM[] = { 0.1f, 0.0f, 0.12f };
-const GLfloat COLOR_BABY_BLUE[] = { 0.592, 0.753, 0.922 };
-const GLfloat COLOR_ORANGE[] = { 0.91, 0.667, 0.412 };
-const GLfloat COLOR_GREY[] = { 0.831, 0.831, 0.831 };
+const GLfloat COLOR_BABY_BLUE[] = { 0.592f, 0.753f, 0.922f };
+const GLfloat COLOR_ORANGE[] = { 0.91f, 0.667f, 0.412f };
+const GLfloat COLOR_GREY[] = { 0.831f, 0.831f, 0.831f };
 const GLfloat COLOR_GOLD[] = { 1.0f, 0.84f, 0.0f };
 const GLfloat COLOR_SKIN_BEIGE[] = { 0.94f, 0.82f, 0.72f };
 const GLfloat COLOR_SKIN_BROWN[] = { 0.65f, 0.45f, 0.32f };
@@ -91,9 +91,9 @@ bool isSecondLightOn = true;
 
 // lighting
 GLfloat ambientLightColour[] = { 0.2f, 0.2f, 0.2f, 1.0f };
-GLfloat diffuseLightColour1[] = { 0.851, 0, 0.91, 1.0f };
-GLfloat diffuseLightColour2[] = { 0.247, 0.91, 0, 1.0f };
-GLfloat diffuseLightColour3[] = { 0.91, 0.494, 0.027, 1.0f };
+GLfloat diffuseLightColour1[] = { 0.851f, 0.0f, 0.91f, 1.0f };
+GLfloat diffuseLightColour2[] = { 0.247f, 0.91f, 0.0f, 1.0f };
+GLfloat diffuseLightColour3[] = { 0.91f, 0.494f, 0.027f, 1.0f };
 GLfloat diffuseLightPosition[] = { lightX, lightY, lightZ, 1.0f };
 GLfloat diffuseLightPosition2[] = { light2X, light2Y, light2Z, 1.0f };
 GLfloat diffuseLightPosition3[] = { light3X, light3Y, light3Z, 1.0f };
@@ -178,7 +178,7 @@ float headAngle = 0.0f;
 
 // ===== Timing / Physics Constants =====
 const DWORD SUMMON_DELAY_MS = 1300;
-DWORD delayStartTick = 0;
+ULONGLONG delayStartTick = 0;
 
 const float JUMP_STEP = 0.006f;
 const float JUMP_START_VELOCITY = 0.02f; // higher = jumps higher / longer
@@ -490,7 +490,7 @@ LRESULT WINAPI WindowProcedure(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 				if (!isSummonActive)
 				{
                  isDelayActive = true;
-					delayStartTick = GetTickCount();
+					delayStartTick = GetTickCount64();
 				}
 			}
 			else
@@ -542,7 +542,6 @@ LRESULT WINAPI WindowProcedure(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 		case VK_RIGHT:
 			moveRight = true;
 			break;
-
 		}
 		break;
 
@@ -760,7 +759,7 @@ void setupRenderState()
 
 bool HasDelayElapsed(DWORD startTick, DWORD delayMs)
 {
-	return (GetTickCount() - startTick) >= delayMs;
+	return (GetTickCount64() - startTick) >= delayMs;
 }
 
 bool InitAudio()
@@ -984,6 +983,11 @@ float DegreeToRadian(float degree)
 	return degree * 3.142f / 180.0f;
 }
 
+float GetTimeSec()
+{
+	return (float)GetTickCount64() * 0.001f;
+}
+
 float ComputeSwingAngle(float timeSec, float speed, float maxAngle, float phaseOffset = 0.0f, float swingFactor = 1.0f)
 {
 	return sinf((timeSec * speed) - phaseOffset) * (maxAngle * swingFactor);
@@ -1099,7 +1103,7 @@ void drawTalismanRain()
    // Vertical range where talismans loop from top to bottom.
 	const float spanY = TALISMAN_RAIN_TOP_Y - TALISMAN_RAIN_BOTTOM_Y;
    // Global time (seconds) used to animate continuous falling.
-	const float timeSec = (float)GetTickCount() * 0.001f;
+   const float timeSec = GetTimeSec();
 
    // Spawn a fixed number of talismans in lanes/rows, then animate each one.
 	for (int i = 0; i < TALISMAN_RAIN_COUNT; i++)
@@ -1179,7 +1183,7 @@ void ApplyArmGroup3Pose(float sign, float baseY, bool isJumpPose)
 
 	if (showBell && sign > 0.0f)
 	{
-		float timeSec = (float)GetTickCount() * 0.001f;
+     float timeSec = GetTimeSec();
 		ApplySwingRotateX(timeSec, 4.5f, 14.0f);
 	}
 }
@@ -1404,7 +1408,7 @@ void drawBell()
 	const float BELL_SWING_MAX_ANGLE = 16;
 	const float BELL_PEAK_TRIGGER_EPSILON = 0.2f;
 	const float BELL_PEAK_RESET_MARGIN = 1.0f;
-	float timeSec = (float)GetTickCount() * 0.001f;
+ float timeSec = GetTimeSec();
 	float bellSwingAngle = showBell ? ComputeSwingAngle(timeSec, BELL_SWING_SPEED, BELL_SWING_MAX_ANGLE) : 0.0f;
 
 	if (showBell)
@@ -1738,7 +1742,7 @@ void drawHair() {
 	glTranslatef(0.0f, 0.31f, -0.18f);
 	gluSphere(sphere, 0.054f, slices, stacks);
 
-	float timeSec = (float)GetTickCount() * 0.001f;
+ float timeSec = GetTimeSec();
 	ApplySwingRotateZ(timeSec, 1.6f, 30);
 
 	// second sphere 
