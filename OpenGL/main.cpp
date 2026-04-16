@@ -468,6 +468,9 @@ LRESULT WINAPI WindowProcedure(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 		case VK_F2:
 			isLightOn = !isLightOn;
 			break;
+      case VK_F3:
+			StopBgm();
+			break;
       case VK_CAPITAL:
 			showLightVisualizer = !showLightVisualizer;
 			break;
@@ -981,6 +984,24 @@ float DegreeToRadian(float degree)
 	return degree * 3.142f / 180.0f;
 }
 
+float ComputeSwingAngle(float timeSec, float speed, float maxAngle, float phaseOffset = 0.0f, float swingFactor = 1.0f)
+{
+	return sinf((timeSec * speed) - phaseOffset) * (maxAngle * swingFactor);
+}
+
+void ApplySwingRotateZ(float timeSec, float speed, float maxAngle, float phaseOffset = 0.0f, float swingFactor = 1.0f)
+{
+	glRotatef(ComputeSwingAngle(timeSec, speed, maxAngle, phaseOffset, swingFactor), 0.0f, 0.0f, 1.0f);
+}
+void ApplySwingRotateY(float timeSec, float speed, float maxAngle, float phaseOffset = 0.0f, float swingFactor = 1.0f)
+{
+	glRotatef(ComputeSwingAngle(timeSec, speed, maxAngle, phaseOffset, swingFactor), 0.0f, 1.0f, 0.0f);
+}
+void ApplySwingRotateX(float timeSec, float speed, float maxAngle, float phaseOffset = 0.0f, float swingFactor = 1.0f)
+{
+	glRotatef(ComputeSwingAngle(timeSec, speed, maxAngle, phaseOffset, swingFactor), 1.0f, 0.0f, 0.0f);
+}
+
 void drawHalfCylinder(float baseRadius, float topRadius, float height, int segments, bool capBottom = true, bool capTop = true, bool closeFlatSide = true)
 {
 	if (segments < 1)
@@ -1089,6 +1110,7 @@ void drawTalismanRain()
 		float x = -1.8f + lane * 0.72f;
 		float z = -2.8f + row * 0.9f;
 
+
 		// Per-talisman phase offset so they don't all fall in sync.
 		float phase = ((float)i * 0.37f);
         // Wrap falling movement with fmodf so each talisman resets to top after reaching bottom.
@@ -1155,7 +1177,11 @@ void ApplyArmGroup3Pose(float sign, float baseY, bool isJumpPose)
 		glTranslatef(sign * 0.00f, 0.00f, -0.02f); 
 	} 
 
-      
+	if (showBell && sign > 0.0f)
+	{
+		float timeSec = (float)GetTickCount() * 0.001f;
+		ApplySwingRotateX(timeSec, 4.5f, 14.0f);
+	}
 }
 
 void ApplyLegPantGroup1Pose(float sign, bool isJumpPose)
@@ -1317,17 +1343,15 @@ void drawKeybindOverlay()
 
 	const float keyX = -0.95f;
 	const float descX = -0.58f;
+	const float keybindYOffset = 0.16f;
 
 	auto drawKeyRow = [&](float y, const char* key, const char* description)
 	{
-		drawText2D(keyX, y, key);
-		drawText2D(descX, y, description);
+		drawText2D(keyX, y + keybindYOffset, key);
+		drawText2D(descX, y + keybindYOffset, description);
 	};
 
-    drawText2D(keyX, 0.72f, "Keybinds");
-	drawKeyRow(0.67f, "Key", "Description");
-
-	drawText2D(keyX, 0.61f, "-------------- CAMERA & LIGHT MOVEMENT ----------------------------------------");
+	drawText2D(keyX, 0.61f + keybindYOffset, "-------------- CAMERA & LIGHT MOVEMENT ----------------------------------------");
 	drawKeyRow(0.56f, "W", "Forward");
 	drawKeyRow(0.51f, "S", "Backward");
 	drawKeyRow(0.46f, "A", "Left");
@@ -1338,7 +1362,7 @@ void drawKeybindOverlay()
 	drawKeyRow(0.21f, "K / L", "Y rotation");
 	drawKeyRow(0.16f, "M / N", "Z rotation");
 
-	drawText2D(keyX, 0.10f, "-------------- CHARACTER --------------------------------------------------------------------");
+	drawText2D(keyX, 0.10f + keybindYOffset, "-------------- CHARACTER --------------------------------------------------------------------");
 	drawKeyRow(0.05f, "Arrow Keys", "Move character");
 	drawKeyRow(0.00f, "Space", "Jump");
 	drawKeyRow(-0.05f, "J", "Toggle jump pose");
@@ -1346,7 +1370,7 @@ void drawKeybindOverlay()
 	drawKeyRow(-0.15f, "G", "Switch cloth customization");
 	drawKeyRow(-0.20f, "R", "Reset character");
 
-	drawText2D(keyX, -0.26f, "-------------- BODY PART ADJUSTMENT -------------------------------------------");
+    drawText2D(keyX, -0.26f + keybindYOffset, "-------------- BODY PART ADJUSTMENT -------------------------------------------");
 	drawKeyRow(-0.31f, "[", "Select previous body part");
 	drawKeyRow(-0.36f, "]", "Select next body part");
 	drawKeyRow(-0.41f, "Z", "Increase angle");
@@ -1354,35 +1378,34 @@ void drawKeybindOverlay()
 	drawKeyRow(-0.51f, "< ", "Previous face expression");
 	drawKeyRow(-0.56f, ">", "Next face expression");
 
-	drawText2D(keyX, -0.62f, "-------------- UTILITY --------------------------------------------------------------------------");
+	drawText2D(keyX, -0.62f + keybindYOffset, "-------------- UTILITY --------------------------------------------------------------------------");
 	drawKeyRow(-0.67f, "1", "Character");
 	drawKeyRow(-0.72f, "2", "Weapon");
 	drawKeyRow(-0.77f, "Esc", "Reset scene");
 	drawKeyRow(-0.82f, "Shift", "Switch control mode (Cam/L1/L2/L3)");
 	drawKeyRow(-0.87f, "Tab", "Switch projection");
-	drawKeyRow(-0.92f, "F2", "Toggle light");
-	drawKeyRow(-0.97f, "CapsLock", "Toggle light visualizers");
+	drawKeyRow(-0.92f, "CapsLock", "Toggle light visualizers");
+	drawKeyRow(-0.97f, "F1", "Toggle help menu");
+	drawKeyRow(-1.02f, "F2", "Toggle light");
+	drawKeyRow(-1.07f, "F3", "Stop BGM");
 	
-
 	glPopMatrix();
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
 
-    glPixelZoom(1.0f, 1.0f);
 
 	glEnable(GL_DEPTH_TEST);
 }
 
 void drawBell()
 {
-	const float BELL_SWING_SPEED = 5.0f;
-	const float BELL_SWING_MAX_ANGLE = 20.0f;
-	const float BELL_BASE_UP_ANGLE = 2.0f;
+	const float BELL_SWING_SPEED = 4.5f;
+	const float BELL_SWING_MAX_ANGLE = 16;
 	const float BELL_PEAK_TRIGGER_EPSILON = 0.2f;
 	const float BELL_PEAK_RESET_MARGIN = 1.0f;
 	float timeSec = (float)GetTickCount() * 0.001f;
-	float bellSwingAngle = showBell ? (sinf(timeSec * BELL_SWING_SPEED) * BELL_SWING_MAX_ANGLE) : 0.0f;
+	float bellSwingAngle = showBell ? ComputeSwingAngle(timeSec, BELL_SWING_SPEED, BELL_SWING_MAX_ANGLE) : 0.0f;
 
 	if (showBell)
 	{
@@ -1400,16 +1423,14 @@ void drawBell()
 	{
 		hasBellPeakSoundPlayed = false;
 	}
-	
 
 	gluQuadricDrawStyle(sphere, GLU_FILL);
 	gluQuadricDrawStyle(cylinder, GLU_FILL);
 	gluQuadricDrawStyle(disk, GLU_FILL);
 
-
-	// one swing angle + always tilted 2 degree up
 	glPushMatrix();
-	glRotatef(BELL_BASE_UP_ANGLE + bellSwingAngle, 1.0f, 0.0f, 0.0f);
+	if (showBell)
+		ApplySwingRotateZ(timeSec, BELL_SWING_SPEED, BELL_SWING_MAX_ANGLE);
 
 	TextureBindState handleTextureState = BindTexture(T_copper);
 	glColor3f(1.0f, 1.0f, 1.0f);
@@ -1534,6 +1555,26 @@ void drawBell()
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 
+	// sphere ring surrounding bell body 
+	glPushMatrix();
+	glTranslatef(0.0f, -0.04f, 0.0f);
+	for (int i = 0; i < 18; i++)
+	{
+		float angle = ((float)i / 18.0f) * (2.0f * 3.142f);
+		float ringX = 0.11f * cosf(angle);
+		float ringZ = 0.11f * sinf(angle);
+
+		glPushMatrix();
+		glTranslatef(ringX, 0.0f, ringZ);
+		gluSphere(sphere, 0.015f, slices, stacks);
+		glPopMatrix();
+	}
+	glPopMatrix();
+
+   // deplay swing
+	if (showBell)
+		ApplySwingRotateZ(timeSec, BELL_SWING_SPEED, BELL_SWING_MAX_ANGLE + 5, 0.8f);
+
 	// clapper body
 	glPushMatrix();
 	glTranslatef(0.0f, -0.08f, 0.0f);
@@ -1552,22 +1593,6 @@ void drawBell()
 	glPushMatrix();
 	glTranslatef(0.0f, -0.155f, 0.0f);
 	gluSphere(sphere, 0.03f, slices, stacks);
-	glPopMatrix();
-
-	// sphere ring surrounding bell body 
-	glPushMatrix();
-	glTranslatef(0.0f, -0.04f, 0.0f);
-	for (int i = 0; i < 18; i++)
-	{
-		float angle = ((float)i / 18.0f) * (2.0f * 3.142f);
-		float ringX = 0.11f * cosf(angle);
-		float ringZ = 0.11f * sinf(angle);
-
-		glPushMatrix();
-		glTranslatef(ringX, 0.0f, ringZ);
-		gluSphere(sphere, 0.015f, slices, stacks);
-		glPopMatrix();
-	}
 	glPopMatrix();
 
     UnbindTexture(accentTextureState);
@@ -1674,7 +1699,7 @@ void drawHair() {
 	}
 
 	// right front-side connection
- float rightConnA = DegreeToRadian(394.0f);
+	float rightConnA = DegreeToRadian(394.0f);
 	glNormal3f(cosf(rightConnA), 0.0f, sinf(rightConnA));
 	glVertex3f(0.18f, hairTopY, 0.12f);
 	glVertex3f(0.14f, hairBottomY, 0.10f);
@@ -1713,6 +1738,9 @@ void drawHair() {
 	glTranslatef(0.0f, 0.31f, -0.18f);
 	gluSphere(sphere, 0.054f, slices, stacks);
 
+	float timeSec = (float)GetTickCount() * 0.001f;
+	ApplySwingRotateZ(timeSec, 1.6f, 30);
+
 	// second sphere 
 	glTranslatef(0.0f, -0.075f, -0.04f);
 	gluSphere(sphere, 0.052f, slices, stacks);
@@ -1721,24 +1749,30 @@ void drawHair() {
 	glTranslatef(0.0f, -0.08f, -0.01f);
 	gluSphere(sphere, 0.050f, slices, stacks);
 
-	// only segments after the third sphere swing
-	glRotatef(ponytailSwingAngle, 0.0f, 0.0f, 1.0f);
-
 	// straight down 
 	glTranslatef(0.0f, -0.08f, 0.0f);
 	gluSphere(sphere, 0.048f, slices, stacks);
 	glTranslatef(0.0f, -0.08f, 0.0f);
 	gluSphere(sphere, 0.046f, slices, stacks);
+
+    // lower section has extra delayed swing for a more natural bend
+	ApplySwingRotateZ(timeSec, 1.6f, 40, 0.8f);
+
 	glTranslatef(0.0f, -0.08f, 0.0f);
 	gluSphere(sphere, 0.044f, slices, stacks);
 	glTranslatef(0.0f, -0.08f, 0.0f);
 	gluSphere(sphere, 0.042f, slices, stacks);
 	glTranslatef(0.0f, -0.08f, -0.02f);
 	gluSphere(sphere, 0.042f, slices, stacks);
+
+	ApplySwingRotateZ(timeSec, 1.6f, 60, 0.8f);
+
 	glTranslatef(0.0f, -0.06f, -0.04f);
 	gluSphere(sphere, 0.042f, slices, stacks);
 	glTranslatef(0.0f, -0.06f, -0.05f);
 	gluSphere(sphere, 0.040f, slices, stacks);
+
+	ApplySwingRotateZ(timeSec, 1.6f, 60, 0.8f);
 
 	// gold band + connected tip
 	glPushMatrix();
@@ -1972,7 +2006,7 @@ void drawBody() {
 
 		// upper arm (matches sleeve group 2 pose)
 		glPushMatrix();
-       ApplyArmGroup2Pose(sign, 0.058f, isArmForwardPose);
+		ApplyArmGroup2Pose(sign, 0.058f, isArmForwardPose);
 		glColor3fv(COLOR_SKIN_BEIGE);
 		gluQuadricDrawStyle(cylinder, GLU_FILL);
         gluCylinder(cylinder, 0.042f, 0.040f, 0.15f, slices, stacks);
@@ -1983,7 +2017,7 @@ void drawBody() {
 
 		// lower arm (matches sleeve group 3 pose)
 		glPushMatrix();
-       ApplyArmGroup3Pose(sign, 0.058f, isArmForwardPose);
+		ApplyArmGroup3Pose(sign, 0.058f, isArmForwardPose);
 		glColor3fv(COLOR_SKIN_BEIGE);
 		gluQuadricDrawStyle(cylinder, GLU_FILL);
 		gluCylinder(cylinder, 0.040f, 0.036f, 0.30f, slices, stacks);
@@ -2004,8 +2038,8 @@ void drawBody() {
 		if (showBell && side == 1)
 		{
 			glPushMatrix();
-           ApplyArmGroup3Pose(sign, 0.058f, isArmForwardPose);
-			glTranslatef(0.13f, 0.0f, 0.37f);
+			ApplyArmGroup3Pose(sign, 0.058f, isArmForwardPose);
+			glTranslatef(0.16f, 0.0f, 0.4f);
 			glRotatef(90, 0.0f, 0.0f, 1.0f);
 			glScalef(0.5f, 0.5f, 0.5f);
 			drawBell();
@@ -2230,7 +2264,7 @@ void drawPants() {
 		ApplyLegPantGroup2Pose(sign, isJumpPose);
 
 		// lower pant
-    glColor3fv(GetCustomizationColor(0));
+		glColor3fv(GetCustomizationColor(0));
 		gluQuadricDrawStyle(cylinder, GLU_FILL);
 		glPushMatrix();
 		glTranslatef(0.0f, 0.0f, -0.08f);
@@ -2238,7 +2272,7 @@ void drawPants() {
 		glPopMatrix();
 
 		//cuff
-    glColor3fv(GetCustomizationColor(0));
+		glColor3fv(GetCustomizationColor(0));
 		gluQuadricDrawStyle(sphere, GLU_FILL);
 		gluSphere(sphere, 0.11f, 6, 6);
 
@@ -2388,7 +2422,7 @@ void drawFace() {
 		{
 			float sign = (side == 0) ? -1.0f : 1.0f;
 			glPushMatrix();
-			glTranslatef(sign * 0.09f, 0.28f, 0.182f);
+			glTranslatef(sign * 0.09f, 0.28f, 0.19f);
 			glRotatef(36.0f, 1.0f, 0.0f, 0.0f);
 			gluQuadricDrawStyle(disk, GLU_FILL);
 			gluDisk(disk, 0.0f, 0.03f, slices, 1);
