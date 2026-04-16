@@ -1,0 +1,18 @@
+﻿  main.cpp
+C:\Users\evago\source\repos\OpenGL\OpenGL\main.cpp(57,37): warning C4305: 'initializing': truncation from 'double' to 'const GLfloat'
+C:\Users\evago\source\repos\OpenGL\OpenGL\main.cpp(57,44): warning C4305: 'initializing': truncation from 'double' to 'const GLfloat'
+C:\Users\evago\source\repos\OpenGL\OpenGL\main.cpp(57,51): warning C4305: 'initializing': truncation from 'double' to 'const GLfloat'
+C:\Users\evago\source\repos\OpenGL\OpenGL\main.cpp(58,34): warning C4305: 'initializing': truncation from 'double' to 'const GLfloat'
+C:\Users\evago\source\repos\OpenGL\OpenGL\main.cpp(58,40): warning C4305: 'initializing': truncation from 'double' to 'const GLfloat'
+C:\Users\evago\source\repos\OpenGL\OpenGL\main.cpp(58,47): warning C4305: 'initializing': truncation from 'double' to 'const GLfloat'
+C:\Users\evago\source\repos\OpenGL\OpenGL\main.cpp(59,32): warning C4305: 'initializing': truncation from 'double' to 'const GLfloat'
+C:\Users\evago\source\repos\OpenGL\OpenGL\main.cpp(59,39): warning C4305: 'initializing': truncation from 'double' to 'const GLfloat'
+C:\Users\evago\source\repos\OpenGL\OpenGL\main.cpp(59,46): warning C4305: 'initializing': truncation from 'double' to 'const GLfloat'
+C:\Users\evago\source\repos\OpenGL\OpenGL\main.cpp(94,35): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+C:\Users\evago\source\repos\OpenGL\OpenGL\main.cpp(94,45): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+C:\Users\evago\source\repos\OpenGL\OpenGL\main.cpp(95,35): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+C:\Users\evago\source\repos\OpenGL\OpenGL\main.cpp(95,42): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+C:\Users\evago\source\repos\OpenGL\OpenGL\main.cpp(96,35): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+C:\Users\evago\source\repos\OpenGL\OpenGL\main.cpp(96,41): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+C:\Users\evago\source\repos\OpenGL\OpenGL\main.cpp(96,48): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+  OpenGL.vcxproj -> C:\Users\evago\source\repos\OpenGL\x64\Debug\OpenGL.exe
