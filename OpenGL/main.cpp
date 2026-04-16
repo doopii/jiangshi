@@ -47,8 +47,8 @@ int windowHeight = 800;
 GLUquadricObj* sphere = gluNewQuadric();
 GLUquadricObj* cylinder = gluNewQuadric();
 GLUquadricObj* disk = gluNewQuadric();
-int slices = 8;
-int stacks = 8;
+int slices = 9;
+int stacks = 9;
 
 // ===== Color Palette =====
 const GLfloat COLOR_MAROON[] = { 0.5f, 0.0f, 0.0f };
