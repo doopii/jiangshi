@@ -47,8 +47,8 @@ int windowHeight = 800;
 GLUquadricObj* sphere = gluNewQuadric();
 GLUquadricObj* cylinder = gluNewQuadric();
 GLUquadricObj* disk = gluNewQuadric();
-int slices = 14;
-int stacks = 14;
+int slices = 8;
+int stacks = 8;
 
 // ===== Color Palette =====
 const GLfloat COLOR_MAROON[] = { 0.5f, 0.0f, 0.0f };
@@ -1657,7 +1657,7 @@ void drawHair() {
 
 		// side hair upper 
 		glBegin(GL_TRIANGLE_STRIP);
-     glNormal3f(sign * 0.85f, 0.0f, 0.52f);
+		glNormal3f(sign * 0.85f, 0.0f, 0.52f);
 		glVertex3f(sign * 0.14f, 0.33f, 0.10f);
 		glVertex3f(sign * 0.10f, 0.255f, 0.16f);
 		glVertex3f(sign * 0.16f, 0.28f, 0.10f);
@@ -1665,7 +1665,7 @@ void drawHair() {
 
 		// side hair lower 
 		glBegin(GL_TRIANGLE_STRIP);
-     glNormal3f(sign * 0.85f, 0.0f, 0.52f);
+		glNormal3f(sign * 0.85f, 0.0f, 0.52f);
 		glVertex3f(sign * 0.16f, 0.29f, 0.10f);
 		glVertex3f(sign * 0.08f, 0.21f, 0.16f);
 		glVertex3f(sign * 0.16f, 0.23f, 0.10f);
@@ -1682,7 +1682,7 @@ void drawHair() {
 	int hairStepDeg = 24;
 
 	glBegin(GL_QUAD_STRIP);
-   float leftConnA = DegreeToRadian(146.0f);
+	float leftConnA = DegreeToRadian(146.0f);
 	glNormal3f(cosf(leftConnA), 0.0f, sinf(leftConnA));
 	// left front-side connection
 	glVertex3f(-0.18f, hairTopY, 0.12f);
@@ -1706,8 +1706,8 @@ void drawHair() {
 	glEnd();
 
     // hair end: one triangle per wrap quad segment
-	float hairTipDrop = 0.05f;
-	float hairTipInset = 0.03f;
+	float hairTipDrop = 0.06f;
+	float hairTipInset = 0.04f;
 
 	glBegin(GL_TRIANGLES);
 	for (int a = 146; a + hairStepDeg <= 394; a += hairStepDeg) {
@@ -1918,7 +1918,7 @@ void drawHead()
 	glScalef(1.0f, 1.5f, 1.0f);
 	glColor3fv(COLOR_SKIN_BEIGE);
 	gluQuadricDrawStyle(sphere, GLU_FILL);
-	gluSphere(sphere, 0.20f, slices, stacks);
+	gluSphere(sphere, 0.20f, slices + 2, stacks + 2);
 	glPopMatrix();
 
 	// ears
